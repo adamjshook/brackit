@@ -137,7 +137,7 @@ public class Functions {
 
 	public static final QNm FN_DISTINCT = new QNm(Namespaces.FN_NSURI,
 			Namespaces.FN_PREFIX, "distinct-values");
-	
+
 	public static final QNm FN_ROOT = new QNm(Namespaces.FN_NSURI,
 			Namespaces.FN_PREFIX, "root");
 
@@ -696,8 +696,8 @@ public class Functions {
 				"number"), new Signature(new SequenceType(AtomicType.DBL,
 				Cardinality.One), false, true)));
 		predefine(new Number(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
-				"number"), new Signature(new SequenceType(AnyNodeType.ANY_NODE,
-				Cardinality.ZeroOrOne), new SequenceType(AnyNodeType.ANY_NODE,
+				"number"), new Signature(new SequenceType(AtomicType.DBL,
+				Cardinality.One), new SequenceType(AtomicType.ANA,
 				Cardinality.ZeroOrOne))));
 		predefine(new Root(FN_ROOT, new Signature(new SequenceType(
 				AnyNodeType.ANY_NODE, Cardinality.ZeroOrOne), false, true)));
@@ -867,7 +867,11 @@ public class Functions {
 				"sum"), new Signature(new SequenceType(AtomicType.ANA,
 				Cardinality.ZeroOrOne), new SequenceType(AtomicType.ANA,
 				Cardinality.ZeroOrMany)), false));
-
+		predefine(new SumAvg(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
+				"sum"), new Signature(new SequenceType(AtomicType.ANA,
+				Cardinality.ZeroOrOne), new SequenceType(AtomicType.ANA,
+				Cardinality.ZeroOrMany), new SequenceType(AtomicType.ANA,
+				Cardinality.ZeroOrOne)), false));
 		// See XQuery Functions and Operators 15.5 Functions and Operators that
 		// Generate Sequences
 		predefine(new Doc(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,

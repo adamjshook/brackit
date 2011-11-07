@@ -267,7 +267,6 @@ public class PathExprTest extends XQueryBaseTest {
 	public void attributeTest3() throws Exception {
 		Sequence res = new XQuery("(<a b='' c=''/>)/attribute(b, xs:double)")
 				.execute(ctx);
-		print(res);
 		ResultChecker.check(null, res, false);
 	}
 

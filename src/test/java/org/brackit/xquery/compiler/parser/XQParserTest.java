@@ -145,11 +145,6 @@ public class XQParserTest extends XQueryBaseTest {
 	}
 	
 	@Test
-	public void stringLiteralWithAmpersand() throws Exception {
-		new XQParser("\"a string &;\"").parse();
-	}
-	
-	@Test
 	public void stringLiteralWithEntityReference() throws Exception {
 		new XQParser("\"a string &amp;\"").parse();
 	}	

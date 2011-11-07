@@ -71,6 +71,11 @@ public class BindingPushup extends PipelineVarTracker {
 				break;
 			} else if ((tmp.getType() == Count) && (!pushableAfterCount(node, tmp))) {
 				break;
+			} else if ((tmp.getType() == ForBind) && (tmp.getType() == ForBind)) {
+				// TODO switching ForBinds is legal if order does not matter
+				// e.g., because of a following order by or because 
+				// the static context is unordered
+				break;
 			} else if (dependsOn(tmp, node)){
 				break;
 			}

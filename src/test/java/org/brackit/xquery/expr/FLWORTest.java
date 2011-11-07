@@ -209,7 +209,7 @@ public class FLWORTest extends XQueryBaseTest {
 	public void sequenceOfLetAndForExpressions() throws Exception {
 		Sequence result = new XQuery(
 				"let $a := (1,2,3) let $b := (4,5,6) let $c := (7,8,9) for $d in $a for $e in $b for $f in $c let $g := ($d + $f) return $d + $d + $f ")
-				.execute(ctx);
+				.execute(ctx);		
 		Sequence ints = intSequence(9, 10, 11, 9, 10, 11, 9, 10, 11, 11, 12,
 				13, 11, 12, 13, 11, 12, 13, 13, 14, 15, 13, 14, 15, 13, 14, 15);
 		ResultChecker.dCheck(ints, result);

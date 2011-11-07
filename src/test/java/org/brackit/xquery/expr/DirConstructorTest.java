@@ -310,7 +310,6 @@ public class DirConstructorTest extends XQueryBaseTest {
 		Sequence res = new XQuery(
 				"<e xmlns:f=\"foo\" xmlns=\"bla\" f:att=\"\"><f/></e>")
 				.execute(ctx);
-		System.out.println(res);
 	}
 
 	// namespace-uri(<e xmlns:f="foo&lt;" xmlns="bla" f:att=""></e>/@*) eq

@@ -59,9 +59,9 @@ import org.brackit.xquery.xdm.Signature;
  * 
  */
 public class RegEx extends AbstractFunction {
-	private final static List<Character> WHITESPACE = Arrays.asList(Character
-			.toChars(0x09)[0], Character.toChars(0x0A)[0], Character
-			.toChars(0x0D)[0], Character.toChars(0x20)[0]);
+	private final static List<Character> WHITESPACE = Arrays.asList(
+			Character.toChars(0x09)[0], Character.toChars(0x0A)[0],
+			Character.toChars(0x0D)[0], Character.toChars(0x20)[0]);
 
 	public static enum Mode {
 		MATCH, REPLACE, TOKENIZE
@@ -75,8 +75,8 @@ public class RegEx extends AbstractFunction {
 	}
 
 	@Override
-	public Sequence execute(StaticContext sctx, QueryContext ctx, Sequence[] args)
-			throws QueryException {
+	public Sequence execute(StaticContext sctx, QueryContext ctx,
+			Sequence[] args) throws QueryException {
 		boolean removeWhitespace = false;
 		int flagMask = Pattern.UNIX_LINES;
 
@@ -141,17 +141,15 @@ public class RegEx extends AbstractFunction {
 			String replace = ((Str) args[2]).str;
 
 			// Disallowed in replacement string: backslash or dollar sign as
-			// only character in string,
-			// or dollar sign not preceded by backslash and not followed by a
-			// digit,
-			// or backslash not preceded by backslash and not followed by a
-			// dollar sign
-			if (Pattern.matches(
-					"(\\$|\\\\|.*[^\\\\]\\$\\D.*|.*[^\\\\]\\\\[^\\$].*)",
-					replace)) {
+			// only character in string, or dollar sign not preceded by
+			// backslash and not followed by a digit, or backslash not
+			// preceded by backslash and not followed by a dollar sign
+			String pat = "(\\$|\\\\|.*[^\\\\]\\$\\D.*|.*[^\\\\]\\\\[^\\$].*)";
+			if (Pattern.matches(pat, replace)) {
 				throw (new QueryException(
 						ErrorCode.ERR_INVALID_REPLACEMENT_STRING,
-						"Replacement string matches makes illegal use of chars '\\' or '$'."));
+						"Replacement string matches makes illegal "
+								+ "use of chars '\\' or '$'."));
 			}
 
 			StringBuffer sb = new StringBuffer();
@@ -192,36 +190,43 @@ public class RegEx extends AbstractFunction {
 		boolean escaped = false;
 		boolean groupStart = false;
 		int completeGroups = 0;
-		int backReference = 0;
+		int backRef = 0;
 		int charClassDepth = 0;
 		int groupDepth = 0;
 
 		for (char c : regex.str.toCharArray()) {
-			if ((backReference > 0 ? c >= '0' : c >= '1') && c <= '9'
-					&& escaped) {
-				if (charClassDepth > 0) {
+			if (escaped) {
+				if (backRef == 0 && c == '0') {
 					throw new QueryException(
 							ErrorCode.ERR_INVALID_REGULAR_EXPRESSION,
-							"Back references in character class expressions are disallowed.");
+							"Reference to group 0 not allowed");
+				} else if (c >= '0' && c <= '9') {
+					if (charClassDepth > 0) {
+						throw new QueryException(
+								ErrorCode.ERR_INVALID_REGULAR_EXPRESSION,
+								"Back references in character class expressions"
+										+ " are disallowed.");
+					}
+					backRef = backRef * 10
+							+ Integer.parseInt(Character.toString(c));
+					continue;
 				}
-				backReference = backReference * 10
-						+ Integer.parseInt(Character.toString(c));
-				continue;
 			}
 
-			if (backReference > 0) {
+			if (backRef > 0) {
 				// Check back reference that just ended
-				if (backReference > completeGroups) {
+				if (backRef > completeGroups) {
 					throw new QueryException(
 							ErrorCode.ERR_INVALID_REGULAR_EXPRESSION,
 							"Back reference to nonexisting or unfinished group.");
 				} else {
-					backReference = 0;
+					backRef = 0;
 					escaped = false;
 				}
 			}
 
-			if (c == '\\') {
+			if (c == '\\' && !escaped) {
+				// Not preceded by backslash
 				escaped = true;
 				groupStart = false;
 				continue;
@@ -267,8 +272,14 @@ public class RegEx extends AbstractFunction {
 			escaped = false;
 		}
 
+		// Check for trailing '\' (only valid with subsequent characters)
+		if (escaped && backRef == 0) {
+			throw new QueryException(ErrorCode.ERR_INVALID_REGULAR_EXPRESSION,
+					"Trailing backslash character in pattern.");
+		}
+
 		// Check back reference if that was last token in pattern
-		if (backReference > 0 && backReference > completeGroups) {
+		if (backRef > 0 && backRef > completeGroups) {
 			throw new QueryException(ErrorCode.ERR_INVALID_REGULAR_EXPRESSION,
 					"Back reference to nonexisting or unfinished group.");
 		}

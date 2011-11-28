@@ -39,7 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.brackit.xquery.QueryException;
 import org.brackit.xquery.module.Module;
 import org.brackit.xquery.util.URIHandler;
 
@@ -50,7 +49,7 @@ import org.brackit.xquery.util.URIHandler;
  */
 public class BaseResolver implements ModuleResolver {
 
-	private Map<String, List<Module>> modules;
+	protected Map<String, List<Module>> modules;
 
 	public void register(String targetNSUri, Module module) {
 		List<Module> list = null;
@@ -77,8 +76,8 @@ public class BaseResolver implements ModuleResolver {
 		List<String> loaded = new LinkedList<String>();
 		for (String loc : locations) {
 			try {
-				InputStreamReader in = new InputStreamReader(
-						URIHandler.getInputStream(new URI(loc)));
+				InputStreamReader in = new InputStreamReader(URIHandler
+						.getInputStream(new URI(loc)));
 				CharBuffer buf = CharBuffer.allocate(1024 * 521);
 				int read = in.read(buf);
 				in.close();

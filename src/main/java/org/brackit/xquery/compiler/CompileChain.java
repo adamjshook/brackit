@@ -37,6 +37,8 @@ import org.brackit.xquery.compiler.optimizer.Optimizer;
 import org.brackit.xquery.compiler.parser.XQParser;
 import org.brackit.xquery.compiler.translator.PipelineCompiler;
 import org.brackit.xquery.compiler.translator.Translator;
+import org.brackit.xquery.function.bit.AddDocToCollection;
+import org.brackit.xquery.function.bit.CreateCollection;
 import org.brackit.xquery.function.bit.Every;
 import org.brackit.xquery.function.bit.Parse;
 import org.brackit.xquery.function.bit.Put;
@@ -86,14 +88,31 @@ public class CompileChain {
 		Functions.predefine(new Writeline());
 		Functions.predefine(new Silent());
 		Functions.predefine(new Parse());
+
+		Functions.predefine(new AddDocToCollection(AddDocToCollection.NAME,
+				new Signature(new SequenceType(AtomicType.STR,
+						Cardinality.ZeroOrOne), new SequenceType(
+						AtomicType.STR, Cardinality.One), new SequenceType(
+						AnyItemType.ANY, Cardinality.One))));
+
+		Functions.predefine(new CreateCollection(CreateCollection.NAME,
+				new Signature(
+						new SequenceType(AtomicType.BOOL, Cardinality.One),
+						new SequenceType(AtomicType.STR, Cardinality.One))));
+		Functions.predefine(new CreateCollection(CreateCollection.NAME,
+				new Signature(
+						new SequenceType(AtomicType.BOOL, Cardinality.One),
+						new SequenceType(AtomicType.STR, Cardinality.One),
+						new SequenceType(new AnyItemType(),
+								Cardinality.ZeroOrMany))));
 	}
-	
+
 	final AnyURI baseURI;
-	
+
 	public CompileChain() {
 		baseURI = null;
 	}
-	
+
 	public CompileChain(AnyURI baseURI) {
 		this.baseURI = baseURI;
 	}
@@ -109,7 +128,7 @@ public class CompileChain {
 	protected ModuleResolver getModuleResolver() {
 		return new BaseResolver();
 	}
-	
+
 	protected AST parse(String query) throws QueryException {
 		return new XQParser(query).parse();
 	}

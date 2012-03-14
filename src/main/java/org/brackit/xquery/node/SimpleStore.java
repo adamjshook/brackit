@@ -35,7 +35,7 @@ import java.util.HashMap;
 import org.brackit.xquery.node.d2linked.D2NodeFactory;
 import org.brackit.xquery.node.parser.DocumentParser;
 import org.brackit.xquery.node.parser.SubtreeParser;
-import org.brackit.xquery.util.URIHandler;
+import org.brackit.xquery.util.io.URIHandler;
 import org.brackit.xquery.xdm.Collection;
 import org.brackit.xquery.xdm.DocumentException;
 import org.brackit.xquery.xdm.Node;
@@ -55,12 +55,12 @@ public class SimpleStore implements Store {
 	public Collection<?> create(String name, SubtreeParser parser)
 			throws DocumentException {
 
+		Collection<?> coll;
 		if (parser == null) {
-			throw new DocumentException(
-					"Multi-document collections are not supported");
+			coll = getNodeFactory().collection(name);
+		} else {
+			coll = getNodeFactory().build(parser).getCollection();
 		}
-
-		Collection<?> coll = getNodeFactory().build(parser).getCollection();
 		docs.put(name, coll);
 		return coll;
 	}

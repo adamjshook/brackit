@@ -25,46 +25,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.brackit.xquery.function.bit;
+package org.brackit.xquery.util.annotation;
 
-import org.brackit.annotation.FunctionAnnotation;
-import org.brackit.xquery.ErrorCode;
-import org.brackit.xquery.QueryContext;
-import org.brackit.xquery.QueryException;
-import org.brackit.xquery.atomic.Atomic;
-import org.brackit.xquery.atomic.Bool;
-import org.brackit.xquery.atomic.QNm;
-import org.brackit.xquery.function.AbstractFunction;
-import org.brackit.xquery.module.Namespaces;
-import org.brackit.xquery.module.StaticContext;
-import org.brackit.xquery.xdm.Sequence;
-import org.brackit.xquery.xdm.Signature;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 
- * @author Henrique Valer
- * 
+ * @author Roxana Zapata
+ *
  */
-@FunctionAnnotation(description = "Drops the specified collection.", parameters = "$collectionName")
-public class DropCollection extends AbstractFunction {
-
-	public static final QNm DEFAULT_NAME = new QNm(Namespaces.BIT_NSURI,
-			Namespaces.BIT_PREFIX, "drop-collection");
-
-	public DropCollection(QNm name, Signature signature) {
-		super(name, signature, true);
-	}
-
-	@Override
-	public Sequence execute(StaticContext sctx, QueryContext ctx,
-			Sequence[] args) throws QueryException {
-		try {
-			String doc = ((Atomic) args[0]).stringValue();
-			ctx.getStore().drop(doc);
-			return Bool.TRUE;
-		} catch (Exception e) {
-			throw new QueryException(e, ErrorCode.BIT_DROPCOLLECTION_INT_ERROR,
-					e.getMessage());
-		}
-	}
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value = { ElementType.TYPE })
+public @interface FunctionAnnotation {
+	String description();
+	String[] parameters();
+    String example() default "unimplemented"; 	
 }

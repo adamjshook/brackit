@@ -27,35 +27,40 @@
  */
 package org.brackit.xquery.function.bit;
 
-import org.brackit.annotation.FunctionAnnotation;
-import org.brackit.xquery.ErrorCode;
 import org.brackit.xquery.QueryContext;
 import org.brackit.xquery.QueryException;
 import org.brackit.xquery.atomic.Atomic;
-import org.brackit.xquery.atomic.Bool;
 import org.brackit.xquery.atomic.QNm;
 import org.brackit.xquery.function.AbstractFunction;
 import org.brackit.xquery.module.Namespaces;
 import org.brackit.xquery.module.StaticContext;
-import org.brackit.xquery.node.parser.CollectionParser;
-import org.brackit.xquery.node.parser.SequenceParser;
-import org.brackit.xquery.node.parser.SubtreeParser;
+import org.brackit.xquery.util.annotation.FunctionAnnotation;
 import org.brackit.xquery.xdm.Sequence;
 import org.brackit.xquery.xdm.Signature;
+import org.brackit.xquery.xdm.type.AtomicType;
+import org.brackit.xquery.xdm.type.Cardinality;
+import org.brackit.xquery.xdm.type.ElementType;
+import org.brackit.xquery.xdm.type.SequenceType;
 
 /**
  * 
  * @author Henrique Valer
  * 
  */
-@FunctionAnnotation(description = "Creates a collection.", parameters = "$collectionName")
-public class CreateCollection extends AbstractFunction {
+@FunctionAnnotation(description = "Creates a collection.", parameters = "$name")
+public class Create extends AbstractFunction {
 
 	public static final QNm DEFAULT_NAME = new QNm(Namespaces.BIT_NSURI,
-			Namespaces.BIT_PREFIX, "create-collection");
+			Namespaces.BIT_PREFIX, "create");
 
-	public CreateCollection(QNm name, Signature signature) {
-		super(name, signature, true);
+	public Create() {
+		this(DEFAULT_NAME);
+	}
+
+	public Create(QNm name) {
+		super(name, new Signature(new SequenceType(ElementType.ELEMENT,
+				Cardinality.ZeroOrOne), new SequenceType(AtomicType.STR,
+				Cardinality.One)), true);
 	}
 
 	@Override
@@ -63,20 +68,12 @@ public class CreateCollection extends AbstractFunction {
 			Sequence[] args) throws QueryException {
 		try {
 			String collection = ((Atomic) args[0]).stringValue();
-			SubtreeParser parser = null;
-
-			if (args.length > 1) {
-
-				// initialize collection with documents
-				parser = new CollectionParser(new SequenceParser(args[1]));
-			}
-
-			ctx.getStore().create(collection, parser);
-
-			return Bool.TRUE;
+			ctx.getStore().create(collection, null);
+			// TODO
+			return null;
 		} catch (Exception e) {
 			throw new QueryException(e,
-					ErrorCode.BIT_CREATECOLLECTION_INT_ERROR, e.getMessage());
+					BitError.BIT_CREATECOLLECTION_INT_ERROR, e.getMessage());
 		}
 	}
 }

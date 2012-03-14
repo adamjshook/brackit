@@ -27,8 +27,6 @@
  */
 package org.brackit.xquery.function.bit;
 
-import org.brackit.annotation.FunctionAnnotation;
-import org.brackit.xquery.ErrorCode;
 import org.brackit.xquery.QueryContext;
 import org.brackit.xquery.QueryException;
 import org.brackit.xquery.atomic.Atomic;
@@ -37,35 +35,38 @@ import org.brackit.xquery.atomic.QNm;
 import org.brackit.xquery.function.AbstractFunction;
 import org.brackit.xquery.module.Namespaces;
 import org.brackit.xquery.module.StaticContext;
-import org.brackit.xquery.xdm.Signature;
 import org.brackit.xquery.xdm.Sequence;
+import org.brackit.xquery.xdm.Signature;
+import org.brackit.xquery.xdm.type.AtomicType;
+import org.brackit.xquery.xdm.type.Cardinality;
+import org.brackit.xquery.xdm.type.SequenceType;
 
 /**
  * 
  * @author Henrique Valer
  * 
  */
-@FunctionAnnotation(description = "Checks whether a collection "
-		+ "exists or not.", parameters = "$collectionName")
-public class ExistCollection extends AbstractFunction {
+public class Mkdir extends AbstractFunction {
 
 	public static final QNm DEFAULT_NAME = new QNm(Namespaces.BIT_NSURI,
-			Namespaces.BIT_PREFIX, "exist-collection");
+			Namespaces.BIT_PREFIX, "mkdir");
 
-	public ExistCollection(QNm name, Signature signature) {
-		super(name, signature, true);
+	public Mkdir() {
+		super(Mkdir.DEFAULT_NAME, new Signature(new SequenceType(
+				AtomicType.STR, Cardinality.One), new SequenceType(
+				AtomicType.STR, Cardinality.One)), true);
 	}
 
 	@Override
 	public Sequence execute(StaticContext sctx, QueryContext ctx,
 			Sequence[] args) throws QueryException {
+		String vDirName = ((Atomic) args[0]).stringValue();
 		try {
-			String collection = ((Atomic) args[0]).stringValue();
-			ctx.getStore().lookup(collection);
+			ctx.getStore().makeDir(vDirName);
 			return Bool.TRUE;
 		} catch (Exception e) {
-			throw new QueryException(e,
-					ErrorCode.BIT_EXISTCOLLECTION_INT_ERROR, e.getMessage());
+			throw new QueryException(e, BitError.BIT_MAKEDIRECTORY_INT_ERROR,
+					e.getMessage());
 		}
 	}
 }

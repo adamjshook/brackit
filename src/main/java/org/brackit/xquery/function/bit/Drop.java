@@ -27,9 +27,6 @@
  */
 package org.brackit.xquery.function.bit;
 
-import org.brackit.annotation.FunctionAnnotation;
-import org.brackit.annotation.ModuleAnnotation;
-import org.brackit.xquery.ErrorCode;
 import org.brackit.xquery.QueryContext;
 import org.brackit.xquery.QueryException;
 import org.brackit.xquery.atomic.Atomic;
@@ -38,55 +35,44 @@ import org.brackit.xquery.atomic.QNm;
 import org.brackit.xquery.function.AbstractFunction;
 import org.brackit.xquery.module.Namespaces;
 import org.brackit.xquery.module.StaticContext;
-import org.brackit.xquery.node.parser.CollectionParser;
-import org.brackit.xquery.node.parser.SequenceParser;
-import org.brackit.xquery.node.parser.SubtreeParser;
-import org.brackit.xquery.xdm.Collection;
-import org.brackit.xquery.xdm.DocumentException;
+import org.brackit.xquery.util.annotation.FunctionAnnotation;
 import org.brackit.xquery.xdm.Sequence;
 import org.brackit.xquery.xdm.Signature;
-import org.brackit.xquery.xdm.Store;
+import org.brackit.xquery.xdm.type.AtomicType;
+import org.brackit.xquery.xdm.type.Cardinality;
+import org.brackit.xquery.xdm.type.SequenceType;
 
 /**
  * 
  * @author Henrique Valer
  * 
  */
-@ModuleAnnotation(description = "A module for performing various operations "
-		+ "on the Brackit Database.")
-@FunctionAnnotation(description = "Adds a document into a collection. If the "
-		+ "specified collection does not exist, it will be automatically created. ", parameters = {
-		"$collectionName", "$documentName" })
-public class AddDocToCollection extends AbstractFunction {
+@FunctionAnnotation(description = "Drops the specified collection.", parameters = "$name")
+public class Drop extends AbstractFunction {
 
 	public static final QNm DEFAULT_NAME = new QNm(Namespaces.BIT_NSURI,
-			Namespaces.BIT_PREFIX, "add-doc-to-collection");
+			Namespaces.BIT_PREFIX, "drop");
 
-	public AddDocToCollection(QNm name, Signature signature) {
-		super(name, signature, true);
+	public Drop() {
+		this(DEFAULT_NAME);
+	}
+
+	public Drop(QNm name) {
+		super(name, new Signature(new SequenceType(AtomicType.BOOL,
+				Cardinality.One), new SequenceType(AtomicType.STR,
+				Cardinality.One)), true);
 	}
 
 	@Override
 	public Sequence execute(StaticContext sctx, QueryContext ctx,
 			Sequence[] args) throws QueryException {
 		try {
-			String collName = ((Atomic) args[0]).stringValue();
-			SubtreeParser parser = new CollectionParser(new SequenceParser(
-					args[1]));
-
-			Store s = ctx.getStore();
-			Collection<?> coll = null;
-			try {
-				coll = s.lookup(collName);
-				coll.add(parser);
-			} catch (DocumentException e) {
-				// collection does not exist
-				coll = s.create(collName, parser);
-			}
+			String doc = ((Atomic) args[0]).stringValue();
+			ctx.getStore().drop(doc);
 			return Bool.TRUE;
 		} catch (Exception e) {
 			throw new QueryException(e,
-					ErrorCode.BIT_ADDTOCOLLECTION_INT_ERROR, e.getMessage());
+					BitError.BIT_DROPCOLLECTION_INT_ERROR, e.getMessage());
 		}
 	}
 }

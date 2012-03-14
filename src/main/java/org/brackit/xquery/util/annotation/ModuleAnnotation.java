@@ -25,53 +25,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.brackit.xquery.function.bit;
+package org.brackit.xquery.util.annotation;
 
-import java.io.File;
-
-import org.brackit.annotation.FunctionAnnotation;
-import org.brackit.xquery.ErrorCode;
-import org.brackit.xquery.QueryContext;
-import org.brackit.xquery.QueryException;
-import org.brackit.xquery.atomic.Atomic;
-import org.brackit.xquery.atomic.QNm;
-import org.brackit.xquery.atomic.Str;
-import org.brackit.xquery.function.AbstractFunction;
-import org.brackit.xquery.util.FunctionUtils;
-import org.brackit.xquery.xdm.Signature;
-import org.brackit.xquery.module.Namespaces;
-import org.brackit.xquery.module.StaticContext;
-import org.brackit.xquery.xdm.Sequence;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 
- * @author Henrique Valer
+ * @author Roxana Zapata
  * 
  */
-@FunctionAnnotation(description = "Loads a file from the file system as plain text. "
-		+ "The file path ($filePathName) starts at the applications directory, by "
-		+ "default: src/main/resources/apps.", parameters = "$filePathName")
-public class LoadFile extends AbstractFunction {
-
-	public static final QNm DEFAULT_NAME = new QNm(Namespaces.BIT_NSURI,
-			Namespaces.BIT_PREFIX, "load-file");
-
-	public LoadFile(QNm name, Signature signature) {
-		super(name, signature, true);
-	}
-
-	@Override
-	public Sequence execute(StaticContext sctx, QueryContext ctx,
-			Sequence[] args) throws QueryException {
-		try {
-			String fPathName = ((Atomic) args[0]).stringValue().trim();
-			fPathName = (fPathName.startsWith("/")) ? fPathName.substring(1)
-					: fPathName;
-			return new Str(FunctionUtils.getStringFromFile(new File(String
-					.format("src/main/resources/apps/%s", fPathName))));
-		} catch (Exception e) {
-			throw new QueryException(e, ErrorCode.BIT_LOADFILE_INT_ERROR,
-					e.getMessage());
-		}
-	}
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value = { ElementType.TYPE })
+public @interface ModuleAnnotation {
+	String description();
 }

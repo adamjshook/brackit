@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.brackit.xquery.util;
+package org.brackit.xquery.util.io;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,7 +52,7 @@ import org.brackit.xquery.QueryException;
  * @author Henrique Valer
  * 
  */
-public class FunctionUtils {
+public class IOUtils {
 
 	public static PrintStream createBuffer() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -84,6 +84,17 @@ public class FunctionUtils {
 
 	}
 
+	public static FileFilter nameFilter(final String pattern) {
+		return new FileFilter() {
+			final String p = pattern;
+			
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.getName().matches(p);
+			}
+		};
+	}
+	
 	/**
 	 * Returns a list of files from a given folder, respecting the given filter.
 	 * The list of files is extracted recursively.

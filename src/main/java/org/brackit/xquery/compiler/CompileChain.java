@@ -37,11 +37,21 @@ import org.brackit.xquery.compiler.optimizer.Optimizer;
 import org.brackit.xquery.compiler.parser.XQParser;
 import org.brackit.xquery.compiler.translator.PipelineCompiler;
 import org.brackit.xquery.compiler.translator.Translator;
+import org.brackit.xquery.function.bit.Create;
+import org.brackit.xquery.function.bit.Drop;
+import org.brackit.xquery.function.bit.Eval;
 import org.brackit.xquery.function.bit.Every;
+import org.brackit.xquery.function.bit.Exists;
+import org.brackit.xquery.function.bit.Load;
+import org.brackit.xquery.function.bit.Mkdir;
 import org.brackit.xquery.function.bit.Parse;
+import org.brackit.xquery.function.bit.Serialize;
 import org.brackit.xquery.function.bit.Silent;
 import org.brackit.xquery.function.bit.Some;
+import org.brackit.xquery.function.bit.Store;
+import org.brackit.xquery.function.io.Read;
 import org.brackit.xquery.function.io.Readline;
+import org.brackit.xquery.function.io.Write;
 import org.brackit.xquery.function.io.Writeline;
 import org.brackit.xquery.module.Functions;
 import org.brackit.xquery.module.Module;
@@ -72,35 +82,28 @@ public class CompileChain {
 					new SequenceType(AnyItemType.ANY, Cardinality.ZeroOrMany)));
 
 	static {
-		
 		// IO
-		
 		Functions.predefine(new Readline());
-		Functions.predefine(new Writeline());		
-		
-		// BIT
-		
-		// Some
+		Functions.predefine(new Writeline());
+		Functions.predefine(new Read());
+		Functions.predefine(new Write());
+		// Internal
 		Functions.predefine(BIT_SOME_FUNC);
-		
-		// Every
 		Functions.predefine(BIT_EVERY_FUNC);
-		
-		// Silent
+		// Utility
 		Functions.predefine(new Silent());
-		
-		// Parse
 		Functions.predefine(new Parse());
-		
-		// Put (not needed anymore)
-		
-//		Functions.predefine(new Put(Put.NAME, new Signature(new SequenceType(
-//				AtomicType.STR, Cardinality.One), new SequenceType(
-//				AtomicType.STR, Cardinality.One))));
-//		Functions.predefine(new Put(Put.NAME, new Signature(new SequenceType(
-//				AtomicType.STR, Cardinality.One), new SequenceType(
-//				AtomicType.STR, Cardinality.One), new SequenceType(
-//				AtomicType.STR, Cardinality.ZeroOrOne))));
+		Functions.predefine(new Eval());
+		Functions.predefine(new Serialize());
+		// Storage
+		Functions.predefine(new Store(true));
+		Functions.predefine(new Store(false));
+		Functions.predefine(new Load(true));
+		Functions.predefine(new Load(false));
+		Functions.predefine(new Create());
+		Functions.predefine(new Drop());
+		Functions.predefine(new Mkdir());
+		Functions.predefine(new Exists());
 	}
 
 	final AnyURI baseURI;

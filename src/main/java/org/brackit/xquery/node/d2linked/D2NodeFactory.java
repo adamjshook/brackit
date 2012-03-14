@@ -27,15 +27,22 @@
  */
 package org.brackit.xquery.node.d2linked;
 
+import org.brackit.xquery.QueryException;
 import org.brackit.xquery.atomic.Atomic;
 import org.brackit.xquery.atomic.QNm;
 import org.brackit.xquery.atomic.Str;
 import org.brackit.xquery.node.parser.NavigationalSubtreeParser;
 import org.brackit.xquery.node.parser.SubtreeParser;
+import org.brackit.xquery.xdm.Collection;
 import org.brackit.xquery.xdm.DocumentException;
 import org.brackit.xquery.xdm.Node;
 import org.brackit.xquery.xdm.NodeFactory;
 
+/**
+ * 
+ * @author Sebastian Baechle
+ * 
+ */
 public class D2NodeFactory implements NodeFactory<D2Node> {
 	@Override
 	public D2Node attribute(QNm name, Atomic value) throws DocumentException {
@@ -77,5 +84,10 @@ public class D2NodeFactory implements NodeFactory<D2Node> {
 		D2NodeBuilder handler = new D2NodeBuilder();
 		parser.parse(handler);
 		return handler.root();
+	}
+
+	@Override
+	public Collection<D2Node> collection(String name) throws DocumentException {
+		return new DocumentD2Node.D2NodeCollection(name);
 	}
 }

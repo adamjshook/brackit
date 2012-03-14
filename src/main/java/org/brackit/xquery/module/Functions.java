@@ -34,14 +34,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.brackit.xquery.function.bit.AddDocToCollection;
-import org.brackit.xquery.function.bit.CreateCollection;
-import org.brackit.xquery.function.bit.DropCollection;
-import org.brackit.xquery.function.bit.Eval;
-import org.brackit.xquery.function.bit.ExistCollection;
-import org.brackit.xquery.function.bit.LoadFile;
-import org.brackit.xquery.function.bit.MakeDirectory;
-import org.brackit.xquery.function.bit.StoreDoc;
 import org.brackit.xquery.atomic.QNm;
 import org.brackit.xquery.function.ConstructorFunction;
 import org.brackit.xquery.function.fn.Abs;
@@ -100,6 +92,7 @@ import org.brackit.xquery.function.fn.SubstringRelative;
 import org.brackit.xquery.function.fn.SumAvg;
 import org.brackit.xquery.function.fn.Trace;
 import org.brackit.xquery.function.fn.Unordered;
+import org.brackit.xquery.util.Regex;
 import org.brackit.xquery.xdm.Function;
 import org.brackit.xquery.xdm.Signature;
 import org.brackit.xquery.xdm.Type;
@@ -443,36 +436,36 @@ public class Functions {
 		// See XQuery Functions and Operators 7.6 String Functions that Use
 		// Pattern Matching
 		predefine(new RegEx(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
-				"matches"), RegEx.Mode.MATCH, new Signature(new SequenceType(
+				"matches"), Regex.Mode.MATCH, new Signature(new SequenceType(
 				AtomicType.BOOL, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.ZeroOrOne), new SequenceType(
 				AtomicType.STR, Cardinality.One))));
 		predefine(new RegEx(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
-				"matches"), RegEx.Mode.MATCH, new Signature(new SequenceType(
+				"matches"), Regex.Mode.MATCH, new Signature(new SequenceType(
 				AtomicType.BOOL, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.ZeroOrOne), new SequenceType(
 				AtomicType.STR, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.One))));
 		predefine(new RegEx(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
-				"replace"), RegEx.Mode.REPLACE, new Signature(new SequenceType(
+				"replace"), Regex.Mode.REPLACE, new Signature(new SequenceType(
 				AtomicType.STR, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.ZeroOrOne), new SequenceType(
 				AtomicType.STR, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.One))));
 		predefine(new RegEx(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
-				"replace"), RegEx.Mode.REPLACE, new Signature(new SequenceType(
+				"replace"), Regex.Mode.REPLACE, new Signature(new SequenceType(
 				AtomicType.STR, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.ZeroOrOne), new SequenceType(
 				AtomicType.STR, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.One), new SequenceType(
 				AtomicType.STR, Cardinality.One))));
 		predefine(new RegEx(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
-				"tokenize"), RegEx.Mode.TOKENIZE, new Signature(
+				"tokenize"), Regex.Mode.TOKENIZE, new Signature(
 				new SequenceType(AtomicType.STR, Cardinality.ZeroOrMany),
 				new SequenceType(AtomicType.STR, Cardinality.ZeroOrOne),
 				new SequenceType(AtomicType.STR, Cardinality.One))));
 		predefine(new RegEx(new QNm(Namespaces.FN_NSURI, Namespaces.FN_PREFIX,
-				"tokenize"), RegEx.Mode.TOKENIZE, new Signature(
+				"tokenize"), Regex.Mode.TOKENIZE, new Signature(
 				new SequenceType(AtomicType.STR, Cardinality.ZeroOrMany),
 				new SequenceType(AtomicType.STR, Cardinality.ZeroOrOne),
 				new SequenceType(AtomicType.STR, Cardinality.One),
@@ -923,63 +916,6 @@ public class Functions {
 		predefine(new CurrentDateTime(new QNm(Namespaces.FN_NSURI,
 				Namespaces.FN_PREFIX, "default-collation"), new Signature(
 				new SequenceType(AtomicType.STR, Cardinality.One))));
-
-		// Bit
-		
-		// AddDocToCollection
-		Functions.predefine(new AddDocToCollection(AddDocToCollection.DEFAULT_NAME,
-				new Signature(new SequenceType(AtomicType.STR,
-						Cardinality.ZeroOrOne), new SequenceType(
-						AtomicType.STR, Cardinality.One), new SequenceType(
-						AnyItemType.ANY, Cardinality.One))));
-		
-		// CreateCollection (w/o initialization)
-		Functions.predefine(new CreateCollection(CreateCollection.DEFAULT_NAME,
-				new Signature(
-						new SequenceType(AtomicType.BOOL, Cardinality.One),
-						new SequenceType(AtomicType.STR, Cardinality.One))));
-
-		// CreateCollection (with initialization)
-		Functions.predefine(new CreateCollection(CreateCollection.DEFAULT_NAME,
-				new Signature(
-						new SequenceType(AtomicType.BOOL, Cardinality.One),
-						new SequenceType(AtomicType.STR, Cardinality.One),
-						new SequenceType(new AnyItemType(),
-								Cardinality.ZeroOrMany))));
-
-		// DropCollection
-		Functions.predefine(new DropCollection(DropCollection.DEFAULT_NAME,
-				new Signature(
-						new SequenceType(AtomicType.BOOL, Cardinality.One),
-						new SequenceType(AtomicType.STR, Cardinality.One))));
-
-		// MakeDirectory
-		Functions.predefine(new MakeDirectory(MakeDirectory.DEFAULT_NAME,
-				new Signature(
-						new SequenceType(AtomicType.STR, Cardinality.One),
-						new SequenceType(AtomicType.STR, Cardinality.One))));
-
-		// ExistCollection
-		Functions.predefine(new ExistCollection(ExistCollection.DEFAULT_NAME,
-				new Signature(
-						new SequenceType(AtomicType.BOOL, Cardinality.One),
-						new SequenceType(AtomicType.STR, Cardinality.One))));
-		
-		// Eval
-		Functions.predefine(new Eval(Eval.DEFAULT_NAME, new Signature(new SequenceType(
-				AtomicType.STR, Cardinality.ZeroOrOne), new SequenceType(
-				AnyItemType.ANY, Cardinality.One))));
-
-		// LoadFile
-		Functions.predefine(new LoadFile(LoadFile.DEFAULT_NAME, new Signature(
-				new SequenceType(AtomicType.STR, Cardinality.ZeroOrOne),
-				new SequenceType(AtomicType.STR, Cardinality.One))));
-
-		// StoreDoc
-		Functions.predefine(new StoreDoc(StoreDoc.DEFAULT_NAME, new Signature(
-				new SequenceType(AtomicType.STR, Cardinality.ZeroOrOne),
-				new SequenceType(AtomicType.STR, Cardinality.One),
-				new SequenceType(AnyItemType.ANY, Cardinality.One))));
 
 		for (Type type : Type.builtInTypes) {
 			if ((type != Type.ANA) && (type != Type.NOT)) {

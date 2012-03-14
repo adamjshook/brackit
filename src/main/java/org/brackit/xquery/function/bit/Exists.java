@@ -25,23 +25,54 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.brackit.annotation;
+package org.brackit.xquery.function.bit;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.brackit.xquery.QueryContext;
+import org.brackit.xquery.QueryException;
+import org.brackit.xquery.atomic.Atomic;
+import org.brackit.xquery.atomic.Bool;
+import org.brackit.xquery.atomic.QNm;
+import org.brackit.xquery.function.AbstractFunction;
+import org.brackit.xquery.module.Namespaces;
+import org.brackit.xquery.module.StaticContext;
+import org.brackit.xquery.util.annotation.FunctionAnnotation;
+import org.brackit.xquery.xdm.Sequence;
+import org.brackit.xquery.xdm.Signature;
+import org.brackit.xquery.xdm.type.AtomicType;
+import org.brackit.xquery.xdm.type.Cardinality;
+import org.brackit.xquery.xdm.type.SequenceType;
 
 /**
- * @author Roxana Zapata
- *
+ * 
+ * @author Henrique Valer
+ * 
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(value = { ElementType.TYPE })
-public @interface FunctionAnnotation {
-	String description();
-	String[] parameters();
-    String example() default "unimplemented"; 	
+@FunctionAnnotation(description = "Checks whether a collection exists or not.", parameters = "$name")
+public class Exists extends AbstractFunction {
+
+	public static final QNm DEFAULT_NAME = new QNm(Namespaces.BIT_NSURI,
+			Namespaces.BIT_PREFIX, "exists");
+
+	public Exists() {
+		this(DEFAULT_NAME);
+	}
+
+	public Exists(QNm name) {
+		super(name, new Signature(new SequenceType(AtomicType.BOOL,
+				Cardinality.One), new SequenceType(AtomicType.STR,
+				Cardinality.One)), true);
+	}
+
+	@Override
+	public Sequence execute(StaticContext sctx, QueryContext ctx,
+			Sequence[] args) throws QueryException {
+		try {
+			String name = ((Atomic) args[0]).stringValue();
+			return (ctx.getStore().lookup(name) != null) ? Bool.TRUE
+					: Bool.FALSE;
+		} catch (Exception e) {
+			throw new QueryException(e, BitError.BIT_EXISTCOLLECTION_INT_ERROR,
+					e.getMessage());
+		}
+	}
 }

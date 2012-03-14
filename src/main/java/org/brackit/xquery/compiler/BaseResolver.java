@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.brackit.xquery.module.Module;
-import org.brackit.xquery.util.URIHandler;
+import org.brackit.xquery.util.io.URIHandler;
 
 /**
  * 

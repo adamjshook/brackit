@@ -29,8 +29,6 @@ package org.brackit.xquery.function.bit;
 
 import java.io.PrintStream;
 
-import org.brackit.annotation.FunctionAnnotation;
-import org.brackit.xquery.ErrorCode;
 import org.brackit.xquery.QueryContext;
 import org.brackit.xquery.QueryException;
 import org.brackit.xquery.XQuery;
@@ -39,11 +37,15 @@ import org.brackit.xquery.atomic.QNm;
 import org.brackit.xquery.function.AbstractFunction;
 import org.brackit.xquery.module.Namespaces;
 import org.brackit.xquery.module.StaticContext;
-import org.brackit.xquery.node.SubtreePrinter;
-import org.brackit.xquery.util.FunctionUtils;
-import org.brackit.xquery.xdm.Node;
+import org.brackit.xquery.util.annotation.FunctionAnnotation;
+import org.brackit.xquery.util.io.IOUtils;
+import org.brackit.xquery.util.serialize.StringSerializer;
 import org.brackit.xquery.xdm.Sequence;
 import org.brackit.xquery.xdm.Signature;
+import org.brackit.xquery.xdm.type.AnyItemType;
+import org.brackit.xquery.xdm.type.AtomicType;
+import org.brackit.xquery.xdm.type.Cardinality;
+import org.brackit.xquery.xdm.type.SequenceType;
 
 /**
  * 
@@ -56,8 +58,14 @@ public class Eval extends AbstractFunction {
 	public static final QNm DEFAULT_NAME = new QNm(Namespaces.BIT_NSURI,
 			Namespaces.BIT_PREFIX, "eval");
 
-	public Eval(QNm name, Signature signature) {
-		super(name, signature, true);
+	public Eval() {
+		this(DEFAULT_NAME);
+	}
+
+	public Eval(QNm name) {
+		super(name, new Signature(new SequenceType(AtomicType.STR,
+				Cardinality.ZeroOrOne), new SequenceType(AnyItemType.ANY,
+				Cardinality.One)), true);
 	}
 
 	@Override
@@ -68,14 +76,15 @@ public class Eval extends AbstractFunction {
 			if (args[0] instanceof Atomic) {
 				vQuery = ((Atomic) args[0]).stringValue();
 			} else {
-				PrintStream buf = FunctionUtils.createBuffer();
-				SubtreePrinter.print((Node<?>) args[0], buf);
+				PrintStream buf = IOUtils.createBuffer();
+				StringSerializer ser = new StringSerializer(buf);
+				ser.serialize(args[0]);
 				vQuery = buf.toString();
 			}
 			XQuery x = new XQuery(vQuery);
-			return x.execute(ctx);
+			return x.execute(new QueryContext(ctx.getStore()));
 		} catch (Exception e) {
-			throw new QueryException(e, ErrorCode.BIT_EVAL_INT_ERROR,
+			throw new QueryException(e, BitError.BIT_EVAL_INT_ERROR,
 					e.getMessage());
 		}
 	}

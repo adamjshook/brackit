@@ -97,9 +97,7 @@ public class LetBindToLeftJoin extends AggFunChecker {
 		post.addChild(rlet);
 
 		// finally assemble left join
-		AST outStart = new AST(XQ.Start);
-		outStart.addChild(let.getLastChild().copyTree());				
-		AST ljoin = createJoin(leftIn, rightIn, post, outStart);
+		AST ljoin = createJoin(leftIn, rightIn, post, let.getLastChild().copyTree());
 		
 		// we must not sort if result is directly aggregated
 		boolean skipSort = (groupBy.getChild(1).getChild(0).getType() != XQ.SequenceAgg);
